@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=DeltaChat
+Exec=deltachat-desktop %U
+Terminal=false
+Type=Application
+Icon=${SNAP}/meta/gui/deltachat-desktop.png
+StartupWMClass=DeltaChat
+Comment=The Email messenger
+With Delta Chat, you can use your existing Email account as a messenger. End-to-End Encryption with Autocrypt is supported and you can have interactive chat experiences using webxdc apps(https://webxdc.org).
+Keywords=dc;chat;delta;messaging;messenger;email
+MimeType=x-scheme-handler/openpgp4fpr;x-scheme-handler/dcaccount;x-scheme-handler/dclogin;x-scheme-handler/mailto;
+Categories=Network;Chat;InstantMessaging;
