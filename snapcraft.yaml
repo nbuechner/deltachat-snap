@@ -1,6 +1,6 @@
 name: deltachat-desktop
 base: core22
-version: 1.40.1
+version: 1.40.3
 summary: Delta Chat is a messaging app that works over e-mail
 description: |
     Delta Chat is a new chat app that sends messages via e-mails, encrypted if possible, with Autocrypt.
@@ -17,9 +17,11 @@ architectures:
 
 apps:
   deltachat-desktop:
-    command: opt/DeltaChat/deltachat-desktop --no-sandbox
+    command: ./deltachat-desktop --no-sandbox --dev-mode --log-to-console
     plugs: [home, x11, desktop, removable-media, network, audio-record, audio-playback, shared-memory ]
     extensions: [ gnome ]
+    environment:
+      TMPDIR: $XDG_RUNTIME_DIR
 
 plugs:
   shared-memory:
@@ -27,13 +29,28 @@ plugs:
 
 parts:
   main:
-    source: https://download.delta.chat/desktop/v${SNAPCRAFT_PROJECT_VERSION}/deltachat-desktop_${SNAPCRAFT_PROJECT_VERSION}_amd64.deb
-    plugin: dump
-    source-type: deb
+    source: https://github.com/deltachat/deltachat-desktop/archive/refs/tags/v$SNAPCRAFT_PROJECT_VERSION.tar.gz
+    plugin: npm
+    npm-include-node: true
+    npm-node-version: 18.17.1
     override-build: |
-      craftctl default
+        cp src/main/tray.ts src/main/tray.ts.bak
+        cp src/renderer/components/dialogs/Settings-Advanced.tsx src/renderer/components/dialogs/Settings-Advanced.tsx.bak
+        npm install electron-builder
+        npm install electron@latest
+        patch -p1 < /root/project/snap/local/patches/tray-patch.diff
+        npm run build
+        npm run pack:linux:dir
+        mv src/main/tray.ts.bak src/main/tray.ts
+        mv src/renderer/components/dialogs/Settings-Advanced.tsx.bak src/renderer/components/dialogs/Settings-Advanced.tsx
+        cp -rv dist/linux-unpacked/* $SNAPCRAFT_PART_INSTALL/
+    build-environment:
+      - npm_config_unsafe_perm: 'true'
+      - SUDO_UID: '0'
+      - SUDO_GID: '0'
+      - SUDO_USER: 'root'
+      - VERSION_INFO_GIT_REF: ${SNAPCRAFT_PROJECT_VERSION}
     stage-packages:
-       - libappindicator3-1
        - libgtk-3-0
        - libnotify4
        - libnss3
