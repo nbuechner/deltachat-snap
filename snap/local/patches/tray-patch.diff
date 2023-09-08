@@ -1,0 +1,37 @@
+diff --git a/src/main/tray.ts b/src/main/tray.ts
+index bfa8411c..7a11d056 100644
+--- a/src/main/tray.ts
++++ b/src/main/tray.ts
+@@ -79,12 +79,12 @@ function quitDeltaChat() {
+ 
+ export function updateTrayIcon() {
+   // User doesn't want tray icon => destroy it
+-  if (!app.rc['minimized'] && DesktopSettings.state.minimizeToTray !== true) {
++  //if (!app.rc['minimized'] && DesktopSettings.state.minimizeToTray !== true) {
+     if (tray != null) destroyTrayIcon()
+     return
+-  }
++  //}
+ 
+-  renderTrayIcon()
++  //renderTrayIcon()
+ }
+ 
+ function destroyTrayIcon() {
+diff -Naur src/renderer/components/dialogs/Settings-Advanced.tsx src/renderer/components/dialogs/Settings-Advanced.tsx.new
+@@ -31,10 +31,12 @@
+--- a/src/renderer/components/dialogs/Settings-Advanced.tsx	2023-09-08 14:45:18.000000000 +0200
++++ b/src/renderer/components/dialogs/Settings-Advanced.tsx	2023-09-08 16:43:47.947794851 +0200
+@@ -31,10 +31,12 @@
+       <SettingsManageKeys />
+       <br />
+       <br />
++      {/*
+       <SettingsTrayIcon
+         settingsStore={settingsStore}
+         renderDTSettingSwitch={renderDTSettingSwitch}
+       />
++      */}
+       <br />
+       <br />
+       <H5>{tx('pref_experimental_features')}</H5>
