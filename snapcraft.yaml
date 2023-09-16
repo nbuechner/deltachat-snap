@@ -1,6 +1,6 @@
 name: deltachat-desktop
 base: core22
-version: 1.40.3
+version: 1.40.4
 summary: Delta Chat is a messaging app that works over e-mail
 description: |
     Delta Chat is a new chat app that sends messages via e-mails, encrypted if possible, with Autocrypt.
@@ -22,7 +22,6 @@ apps:
     extensions: [ gnome ]
     environment:
       TMPDIR: $XDG_RUNTIME_DIR
-
 plugs:
   shared-memory:
     private: true
@@ -30,15 +29,13 @@ plugs:
 parts:
   main:
     source: https://github.com/deltachat/deltachat-desktop/archive/refs/tags/v$SNAPCRAFT_PROJECT_VERSION.tar.gz
-    plugin: npm
-    npm-include-node: true
-    npm-node-version: 18.17.1
+    plugin: dump
     override-build: |
+        curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s lts
         cp src/main/tray.ts src/main/tray.ts.bak
         cp src/renderer/components/dialogs/Settings-Advanced.tsx src/renderer/components/dialogs/Settings-Advanced.tsx.bak
-        npm install electron-builder
-        npm install electron@latest
         patch -p1 < /root/project/snap/local/patches/tray-patch.diff
+        npm install
         npm run build
         npm run pack:linux:dir
         mv src/main/tray.ts.bak src/main/tray.ts
@@ -60,7 +57,7 @@ parts:
        - libatspi2.0-0
        - libuuid1
        - libsecret-1-0
+       - curl
 lint:
   ignore:
     - library
-
