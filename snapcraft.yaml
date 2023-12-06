@@ -16,11 +16,13 @@ architectures:
     build-for: amd64
   - build-on: arm64
     build-for: arm64
+  - build-on: armhf
+    build-for: armhf
 
 apps:
   deltachat-desktop:
     command: ./deltachat-desktop --disable-gpu --no-sandbox
-    plugs: [home, x11, desktop, unity7, removable-media, network, audio-record, audio-playback, shared-memory, system-observe]
+    plugs: [home, x11, desktop, unity7, removable-media, network, audio-record, audio-playback, shared-memory]
     extensions: [ gnome ]
     environment:
       TMPDIR: $XDG_RUNTIME_DIR
@@ -44,7 +46,8 @@ parts:
           export GLOBAL_AGENT_HTTP_PROXY="${http_proxy}"
           export GLOBAL_AGENT_HTTPS_PROXY="${http_proxy}"
         fi
-        #curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s lts
+        wget -qO rustup.sh https://sh.rustup.rs
+        bash rustup.sh -y
         npm install
         npm run build
         npm run pack:linux:dir
@@ -72,6 +75,7 @@ parts:
        - libsecret-1-0
        - curl
        - libunity9
+       - wget
 lint:
   ignore:
     - library
