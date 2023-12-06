@@ -11,6 +11,8 @@ description: |
 
 grade: stable
 confinement: strict
+compression: lzo
+
 architectures:
   - build-on: amd64
     build-for: amd64
@@ -22,6 +24,7 @@ apps:
     command: ./deltachat-desktop --disable-gpu --no-sandbox
     plugs: [home, x11, desktop, unity7, removable-media, network, audio-record, audio-playback, shared-memory]
     extensions: [ gnome ]
+    compression: lzo
     environment:
       TMPDIR: $XDG_RUNTIME_DIR
       DISABLE_WAYLAND: 1
@@ -46,15 +49,19 @@ parts:
         fi
         export DISTDIR="linux-unpacked"
         if [ $(uname -i) == 'aarch64' ]; then
-           RUSTVER="1.74.0"
-           wget -O rust.tar.gz https://buechner.me/dist/rust-${RUSTVER}-aarch64-unknown-linux-gnu.tar.gz
-           tar xpf rust.tar.gz
-           cd rust-${RUSTVER}-aarch64-unknown-linux-gnu
-           ./install.sh
-           cd ..
-           rm -Rf rust-${RUSTVER}-aarch64-unknown-linux-gnu
-           export PATH=$PATH:/usr/local/bin/
-        export DISTDIR="linux-arm64-unpacked"
+           if [ ! -f "/usr/local/bin/cargo" ]; then
+              RUSTVER="1.74.0"
+              wget -qO rust.tar.gz https://buechner.me/dist/rust-${RUSTVER}-aarch64-unknown-linux-gnu.tar.gz
+              rm -Rf rust-${RUSTVER}-aarch64-unknown-linux-gnu
+              tar xpf rust.tar.gz
+              cd rust-${RUSTVER}-aarch64-unknown-linux-gnu
+              ./install.sh
+              cd ..
+              rm -Rf rust-${RUSTVER}-aarch64-unknown-linux-gnu
+              rm -f rust.tar.gz
+              export PATH=$PATH:/usr/local/bin/
+           fi
+           export DISTDIR="linux-arm64-unpacked"
         fi
         npm install
         npm run build
