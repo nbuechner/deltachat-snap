@@ -14,10 +14,6 @@ confinement: strict
 architectures:
   - build-on: amd64
     build-for: amd64
-  - build-on: arm64
-    build-for: arm64
-  - build-on: armhf
-    build-for: armhf
 
 apps:
   deltachat-desktop:
@@ -46,8 +42,6 @@ parts:
           export GLOBAL_AGENT_HTTP_PROXY="${http_proxy}"
           export GLOBAL_AGENT_HTTPS_PROXY="${http_proxy}"
         fi
-        wget -qO rustup.sh https://sh.rustup.rs
-        bash rustup.sh -y
         npm install
         npm run build
         npm run pack:linux:dir
