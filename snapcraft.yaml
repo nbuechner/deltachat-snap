@@ -36,7 +36,15 @@ parts:
     source: https://github.com/deltachat/deltachat-desktop/archive/refs/tags/v$SNAPCRAFT_PROJECT_VERSION.tar.gz
     plugin: dump
     override-build: |
-        curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s lts
+        set +u # core20 base does not allow unbound variables !
+        # workaround for build.snapcraft.io builds
+        # https://bugs.launchpad.net/bugs/1886861
+        if [ -n "$http_proxy" ]; then
+          export ELECTRON_GET_USE_PROXY=1
+          export GLOBAL_AGENT_HTTP_PROXY="${http_proxy}"
+          export GLOBAL_AGENT_HTTPS_PROXY="${http_proxy}"
+        fi
+        #curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s lts
         npm install
         npm run build
         npm run pack:linux:dir
@@ -47,6 +55,11 @@ parts:
       - SUDO_GID: '0'
       - SUDO_USER: 'root'
       - VERSION_INFO_GIT_REF: ${SNAPCRAFT_PROJECT_VERSION}
+      - PATH: "$PATH:$SNAPCRAFT_PART_BUILD/node_modules/.bin"
+
+    build-snaps:
+      - node/20/stable
+
     stage-packages:
        - libgtk-3-0
        - libnotify4
