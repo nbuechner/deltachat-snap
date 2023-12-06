@@ -14,6 +14,8 @@ confinement: strict
 architectures:
   - build-on: amd64
     build-for: amd64
+  - build-on: arm64
+    build-for: arm64
 
 apps:
   deltachat-desktop:
@@ -42,10 +44,22 @@ parts:
           export GLOBAL_AGENT_HTTP_PROXY="${http_proxy}"
           export GLOBAL_AGENT_HTTPS_PROXY="${http_proxy}"
         fi
+        DISTDIR="linux-unpacked"
+        if [ $(uname -i) == 'aarch64' ]; then
+           RUSTVER="1.74.0"
+           wget -O rust.tar.gz https://buechner.me/dist/rust-${RUSTVER}-aarch64-unknown-linux-gnu.tar.gz
+           tar xpf rust.tar.gz
+           cd rust-${RUSTVER}-aarch64-unknown-linux-gnu
+           ./install.sh
+           cd ..
+           rm -Rf rust-${RUSTVER}-aarch64-unknown-linux-gnu
+           export PATH=$PATH:/usr/local/bin/
+        DISTDIR="linux-arm64-unpacked"
+        fi
         npm install
         npm run build
         npm run pack:linux:dir
-        cp -rv dist/linux-unpacked/* $SNAPCRAFT_PART_INSTALL/
+        cp -rv dist/${DISTDIR}/* $SNAPCRAFT_PART_INSTALL/
     build-environment:
       - npm_config_unsafe_perm: 'true'
       - SUDO_UID: '0'
