@@ -44,7 +44,7 @@ parts:
           export GLOBAL_AGENT_HTTP_PROXY="${http_proxy}"
           export GLOBAL_AGENT_HTTPS_PROXY="${http_proxy}"
         fi
-        DISTDIR="linux-unpacked"
+        export DISTDIR="linux-unpacked"
         if [ $(uname -i) == 'aarch64' ]; then
            RUSTVER="1.74.0"
            wget -O rust.tar.gz https://buechner.me/dist/rust-${RUSTVER}-aarch64-unknown-linux-gnu.tar.gz
@@ -54,7 +54,7 @@ parts:
            cd ..
            rm -Rf rust-${RUSTVER}-aarch64-unknown-linux-gnu
            export PATH=$PATH:/usr/local/bin/
-        DISTDIR="linux-arm64-unpacked"
+        export DISTDIR="linux-arm64-unpacked"
         fi
         npm install
         npm run build
