@@ -1,6 +1,6 @@
 name: deltachat-desktop
 base: core22
-version: 1.40.4
+version: 1.42.2
 summary: Delta Chat is a messaging app that works over e-mail
 description: |
     Delta Chat is a new chat app that sends messages via e-mails, encrypted if possible, with Autocrypt.
@@ -14,14 +14,19 @@ confinement: strict
 architectures:
   - build-on: amd64
     build-for: amd64
+  - build-on: arm64
+    build-for: arm64
 
 apps:
   deltachat-desktop:
-    command: ./deltachat-desktop --no-sandbox --dev-mode --log-to-console
-    plugs: [home, x11, desktop, removable-media, network, audio-record, audio-playback, shared-memory ]
+    command: ./deltachat-desktop --disable-gpu --no-sandbox
+    plugs: [home, x11, desktop, unity7, removable-media, network, audio-record, audio-playback, shared-memory, system-observe]
     extensions: [ gnome ]
     environment:
       TMPDIR: $XDG_RUNTIME_DIR
+      DISABLE_WAYLAND: 1
+      LD_LIBRARY_PATH: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libunity
+
 plugs:
   shared-memory:
     private: true
@@ -32,14 +37,9 @@ parts:
     plugin: dump
     override-build: |
         curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s lts
-        cp src/main/tray.ts src/main/tray.ts.bak
-        cp src/renderer/components/dialogs/Settings-Advanced.tsx src/renderer/components/dialogs/Settings-Advanced.tsx.bak
-        patch -p1 < /root/project/snap/local/patches/tray-patch.diff
         npm install
         npm run build
         npm run pack:linux:dir
-        mv src/main/tray.ts.bak src/main/tray.ts
-        mv src/renderer/components/dialogs/Settings-Advanced.tsx.bak src/renderer/components/dialogs/Settings-Advanced.tsx
         cp -rv dist/linux-unpacked/* $SNAPCRAFT_PART_INSTALL/
     build-environment:
       - npm_config_unsafe_perm: 'true'
@@ -58,6 +58,7 @@ parts:
        - libuuid1
        - libsecret-1-0
        - curl
+       - libunity9
 lint:
   ignore:
     - library
