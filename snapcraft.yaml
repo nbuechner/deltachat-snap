@@ -11,6 +11,7 @@ description: |
 
 grade: stable
 confinement: strict
+compression: lzo
 
 architectures:
   - build-on: amd64
@@ -23,7 +24,6 @@ apps:
     command: ./deltachat-desktop --disable-gpu --no-sandbox
     plugs: [home, x11, desktop, unity7, removable-media, network, audio-record, audio-playback, shared-memory]
     extensions: [ gnome ]
-    compression: lzo
     environment:
       TMPDIR: $XDG_RUNTIME_DIR
       DISABLE_WAYLAND: 1
