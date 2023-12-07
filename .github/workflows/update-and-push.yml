@@ -42,8 +42,8 @@ jobs:
         with:
           name: deltachat-release-info
           path: deltachat-release-info
+      - uses: docker/setup-qemu-action@v1
       - name: snapcraft build
-        uses: docker/setup-qemu-action@v1
         uses: diddlesnaps/snapcraft-multiarch-action@v1
         with:
            architecture: ${{ matrix.platform }}
