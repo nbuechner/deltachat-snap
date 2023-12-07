@@ -1,6 +1,6 @@
 name: deltachat-desktop
 base: core22
-version: "1.00"
+adopt-info: main
 summary: Delta Chat is a messaging app that works over e-mail
 description: |
     Delta Chat is a new chat app that sends messages via e-mails, encrypted if possible, with Autocrypt.
@@ -66,17 +66,19 @@ parts:
            fi
            export DISTDIR="linux-arm64-unpacked"
         fi
+        cd deltachat-desktop-${version}
         npm install
         npm run build
         npm run pack:linux:dir
         cp -rv dist/${DISTDIR}/* $SNAPCRAFT_PART_INSTALL/
         craftctl set version="$version"
+        cd ..
     build-environment:
       - npm_config_unsafe_perm: 'true'
       - SUDO_UID: '0'
       - SUDO_GID: '0'
       - SUDO_USER: 'root'
-      - VERSION_INFO_GIT_REF: ${SNAPCRAFT_PROJECT_VERSION}
+      - VERSION_INFO_GIT_REF: 'latest'
       - PATH: "$PATH:$SNAPCRAFT_PART_BUILD/node_modules/.bin"
 
     build-snaps:
