@@ -1,1 +1,1 @@
-# upscayl-snap
+# deltachat-desktop snap
