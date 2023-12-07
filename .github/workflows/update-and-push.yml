@@ -1,5 +1,5 @@
 name: Push commit on version update
-#on: push
+on: workflow_dispatch
 permissions:
   contents: write
 jobs:
