@@ -1,5 +1,5 @@
-name: Push commit
-on: push
+name: Push commit on version update
+#on: push
 permissions:
   contents: write
 jobs:
@@ -18,6 +18,7 @@ jobs:
         run: date +%s > report.txt
       - name: Commit report
         run: |
+          RELEASE_TAG=$(curl -s https://api.github.com/repos/deltachat/deltachat-desktop/releases/latest | jq -r '.tag_name' | cut -c2-)
           sed -i "/^\([[:space:]]*version: \).*/s//\1$RELEASE_TAG/" snapcraft.yaml
           git config --global user.name 'Nils Büchner'
           git config --global user.email 'nils@buechner.me'
