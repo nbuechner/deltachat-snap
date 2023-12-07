@@ -21,12 +21,6 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
-      - name: Upload new artifact
-        id: upload_artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: deltachat-release-info
-          path: deltachat-release-info
       - uses: docker/setup-qemu-action@v3
       - name: Snapcraft build
         id: snapcraft_build
@@ -41,3 +35,9 @@ jobs:
         with:
           snap: ${{ steps.snapcraft_build.outputs.snap }}
           release: stable
+      - name: Upload new artifact
+        id: upload_artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: deltachat-release-info
+          path: deltachat-release-info
