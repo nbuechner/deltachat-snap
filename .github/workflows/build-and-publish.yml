@@ -3,7 +3,7 @@ on: workflow_dispatch
 permissions:
   contents: write
 jobs:
-  report:
+  build-and-publish:
     runs-on: ubuntu-latest
     strategy:
       matrix:
