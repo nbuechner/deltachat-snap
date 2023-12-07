@@ -8,10 +8,10 @@ jobs:
     strategy:
       matrix:
         platform:
-        - arm64
+        #- arm64
         - amd64
     steps:
-      - name: Get latest release and store artifact
+      - name: Get latest release and write artifact file
         id: get_release
         run: |
           # Store the newly fetched release version in a file
