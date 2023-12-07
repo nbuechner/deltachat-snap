@@ -1,12 +1,16 @@
-name: Push commit on version update
+name: Build snap and publish
 on: workflow_dispatch
 permissions:
   contents: write
 jobs:
   report:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform:
+        - arm64
+        - amd64
     steps:
-
       - name: Get latest release
         id: get_release
         run: |
@@ -31,10 +35,23 @@ jobs:
           sed -i "/^\([[:space:]]*version: \).*/s//\1$RELEASE_TAG/" snapcraft.yaml
           git config --global user.name 'Nils Büchner'
           git config --global user.email 'nils@buechner.me'
-          git commit -am "Automated version update to $RELEASE_TAG"
+          git diff-index --quiet HEAD || git commit -am "Automated version update to $RELEASE_TAG"
           git push
       - name: Upload new artifacts
         uses: actions/upload-artifact@v3
         with:
           name: deltachat-release-info
           path: deltachat-release-info
+      - name: snapcraft build
+        uses: docker/setup-qemu-action@v1
+        uses: diddlesnaps/snapcraft-multiarch-action@v1
+        with:
+           architecture: ${{ matrix.platform }}
+        id: build
+      - name: snapcraft publish
+        uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
+        with:
+          snap: ${{ steps.build.outputs.snap }}
+          release: stable
