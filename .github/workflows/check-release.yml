@@ -17,7 +17,7 @@ jobs:
           name: deltachat-release-info
           workflow_conclusion: success
           workflow: update-and-push.yml
-          if_no_artifact_found: ignore
+          if_no_artifact_found: warn
 
       - name: Get latest release
         id: get_release
