@@ -1,6 +1,6 @@
 name: deltachat-desktop
 base: core22
-#version: 1.00
+version: 1.00
 summary: Delta Chat is a messaging app that works over e-mail
 description: |
     Delta Chat is a new chat app that sends messages via e-mails, encrypted if possible, with Autocrypt.
