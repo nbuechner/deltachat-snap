@@ -1,0 +1,56 @@
+name: Build and publish snap to stable channel
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform:
+        - arm64
+        - amd64
+    steps:
+      - name: Get latest release
+        id: get_release
+        run: |
+          # Fetch release information and extract the release tag
+          RELEASE_TAG=$(curl -s https://api.github.com/repos/deltachat/deltachat-desktop/releases/latest | jq -r '.tag_name')
+          echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
+          echo "latest release: $RELEASE_TAG"
+      - name: Store artifacts
+        run: |
+          # Store the newly fetched release version in a file
+          echo "${{ steps.get_release.outputs.RELEASE_TAG }}" > deltachat-release-info
+          echo "Saved ${{ steps.get_release.outputs.RELEASE_TAG }} to deltachat-release-info"
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: Commit version update
+        run: |
+          RELEASE_TAG=$(curl -s https://api.github.com/repos/deltachat/deltachat-desktop/releases/latest | jq -r '.tag_name' | cut -c2-)
+          echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
+          echo "latest release: $RELEASE_TAG"
+          echo "${{ steps.get_release.outputs.RELEASE_TAG }}" > deltachat-release-info
+          echo "Saved ${{ steps.get_release.outputs.RELEASE_TAG }} to deltachat-release-info"
+          #sed -i "/^\([[:space:]]*version: \).*/s//\1$RELEASE_TAG/" snapcraft.yaml
+          #git config --global user.name 'Nils Büchner'
+          #git config --global user.email 'nils@buechner.me'
+          #git diff-index --quiet HEAD || git commit -am "Automated version update to $RELEASE_TAG" && git push
+      - name: Upload new artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: deltachat-release-info
+          path: deltachat-release-info
+      - uses: docker/setup-qemu-action@v1
+      - name: snapcraft build
+        uses: diddlesnaps/snapcraft-multiarch-action@v1
+        with:
+           architecture: ${{ matrix.platform }}
+        id: build
+      - name: snapcraft publish
+        uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
+        with:
+          snap: ${{ steps.build.outputs.snap }}
+          release: stable
