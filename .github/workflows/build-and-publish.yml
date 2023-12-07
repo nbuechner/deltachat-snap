@@ -16,9 +16,8 @@ jobs:
         run: |
           # Store the newly fetched release version in a file
           RELEASE_TAG=$(curl -s https://api.github.com/repos/deltachat/deltachat-desktop/releases/latest | jq -r '.tag_name')
-          echo "latest release: $RELEASE_TAG"
-          echo "${{ steps.get_release.outputs.RELEASE_TAG }}" > deltachat-release-info
-          echo "Saved ${{ steps.get_release.outputs.RELEASE_TAG }} to deltachat-release-info"
+          echo "${RELEASE_TAG}" > deltachat-release-info
+          echo "Saved ${RELEASE_TAG} to deltachat-release-info"
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
