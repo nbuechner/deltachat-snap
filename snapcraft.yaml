@@ -46,7 +46,7 @@ parts:
           export GLOBAL_AGENT_HTTP_PROXY="${http_proxy}"
           export GLOBAL_AGENT_HTTPS_PROXY="${http_proxy}"
         fi
-        version=$(curl -s https://api.github.com/repos/deltachat/deltachat-desktop/releases/latest | jq -r '.tag_name' | cut -c2-)
+        version=$(wget -qO- https://api.github.com/repos/deltachat/deltachat-desktop/releases/latest | jq -r '.tag_name' | cut -c2-)
         wget -qO source.tgz https://github.com/deltachat/deltachat-desktop/archive/refs/tags/v${version}.tar.gz
         tar xf source.tgz
         rm -f source.tgz
@@ -92,8 +92,11 @@ parts:
        - libatspi2.0-0
        - libuuid1
        - libsecret-1-0
-       - curl
        - libunity9
+
+    build-packages:
+       - curl
+       - jq
        - wget
 lint:
   ignore:
