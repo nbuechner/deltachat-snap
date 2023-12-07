@@ -35,8 +35,7 @@ jobs:
           sed -i "/^\([[:space:]]*version: \).*/s//\1$RELEASE_TAG/" snapcraft.yaml
           git config --global user.name 'Nils Büchner'
           git config --global user.email 'nils@buechner.me'
-          git diff-index --quiet HEAD || git commit -am "Automated version update to $RELEASE_TAG"
-          git push
+          git diff-index --quiet HEAD || git commit -am "Automated version update to $RELEASE_TAG" && git push
       - name: Upload new artifacts
         uses: actions/upload-artifact@v3
         with:
