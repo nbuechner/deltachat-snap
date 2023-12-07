@@ -35,7 +35,7 @@ plugs:
 
 parts:
   main:
-    source: https://github.com/deltachat/deltachat-desktop/archive/refs/tags/v$SNAPCRAFT_PROJECT_VERSION.tar.gz
+    source: .
     plugin: dump
     override-build: |
         set +u # core20 base does not allow unbound variables !
@@ -46,6 +46,10 @@ parts:
           export GLOBAL_AGENT_HTTP_PROXY="${http_proxy}"
           export GLOBAL_AGENT_HTTPS_PROXY="${http_proxy}"
         fi
+        version=$(curl -s https://api.github.com/repos/deltachat/deltachat-desktop/releases/latest | jq -r '.tag_name' | cut -c2-)
+        wget -qO source.tgz https://github.com/deltachat/deltachat-desktop/archive/refs/tags/v${version}.tar.gz
+        tar xf source.tgz
+        rm -f source.tgz
         export DISTDIR="linux-unpacked"
         if [ $(uname -i) == 'aarch64' ]; then
            if [ ! -f "/usr/local/bin/cargo" ]; then
@@ -66,7 +70,6 @@ parts:
         npm run build
         npm run pack:linux:dir
         cp -rv dist/${DISTDIR}/* $SNAPCRAFT_PART_INSTALL/
-        version=$(curl -s https://api.github.com/repos/deltachat/deltachat-desktop/releases/latest | jq -r '.tag_name' | cut -c2-)
         craftctl set version="$version"
     build-environment:
       - npm_config_unsafe_perm: 'true'
