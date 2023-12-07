@@ -32,10 +32,10 @@ jobs:
           echo "latest release: $RELEASE_TAG"
           echo "${{ steps.get_release.outputs.RELEASE_TAG }}" > deltachat-release-info
           echo "Saved ${{ steps.get_release.outputs.RELEASE_TAG }} to deltachat-release-info"
-          sed -i "/^\([[:space:]]*version: \).*/s//\1$RELEASE_TAG/" snapcraft.yaml
-          git config --global user.name 'Nils Büchner'
-          git config --global user.email 'nils@buechner.me'
-          git diff-index --quiet HEAD || git commit -am "Automated version update to $RELEASE_TAG" && git push
+          #sed -i "/^\([[:space:]]*version: \).*/s//\1$RELEASE_TAG/" snapcraft.yaml
+          #git config --global user.name 'Nils Büchner'
+          #git config --global user.email 'nils@buechner.me'
+          #git diff-index --quiet HEAD || git commit -am "Automated version update to $RELEASE_TAG" && git push
       - name: Upload new artifacts
         uses: actions/upload-artifact@v3
         with:
