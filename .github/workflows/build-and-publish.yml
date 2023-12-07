@@ -14,10 +14,9 @@ jobs:
       - name: Get latest release and write artifact file
         id: get_release
         run: |
-          # Store the newly fetched release version in a file
-          RELEASE_TAG=$(curl -s https://api.github.com/repos/deltachat/deltachat-desktop/releases/latest | jq -r '.tag_name')
-          echo "${RELEASE_TAG}" > deltachat-release-info
-          echo "Saved ${RELEASE_TAG} to deltachat-release-info"
+          release_tag=$(curl -s https://api.github.com/repos/deltachat/deltachat-desktop/releases/latest | jq -r '.tag_name')
+          echo "release_tag=$release_tag" >> $GITHUB_OUTPUT
+          echo "latest release: $release_tag"
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
@@ -35,6 +34,11 @@ jobs:
         with:
           snap: ${{ steps.snapcraft_build.outputs.snap }}
           release: stable
+      - name: Store artifact
+        id: store_artifact
+        run: |
+          echo "${{ steps.get_release.outputs.release_tag }}" > deltachat-release-info
+          echo "Saved ${{ steps.get_release.outputs.release_tag }} to deltachat-release-info"
       - name: Upload new artifact
         id: upload_artifact
         uses: actions/upload-artifact@v3
