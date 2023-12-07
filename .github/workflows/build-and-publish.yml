@@ -34,7 +34,6 @@ jobs:
         uses: diddlesnaps/snapcraft-multiarch-action@v1
         with:
            architecture: ${{ matrix.platform }}
-        id: build
       - name: Snapcraft publish
         id: snapcraft_publish
         uses: snapcore/action-publish@v1
