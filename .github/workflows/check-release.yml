@@ -17,7 +17,7 @@ jobs:
           name: deltachat-release-info
           workflow_conclusion: success
           workflow: build-and-publish.yml
-          if_no_artifact_found: fail
+          if_no_artifact_found: warn
 
       - name: Get latest release
         id: get_release
@@ -41,6 +41,10 @@ jobs:
           else
             echo "release_changed=false" >> $GITHUB_OUTPUT
             echo "Release changed: false"
+          fi
+          if [ "$PREVIOUS_RELEASE"  == "NONE" ]; then
+            echo "release_changed=false" >> $GITHUB_OUTPUT
+            echo "Not running build workflow because there is no previous release!"
           fi
 
       - name: Call workflow to build code
