@@ -6,11 +6,28 @@ jobs:
   report:
     runs-on: ubuntu-latest
     steps:
+
+      - name: Get latest release
+        id: get_release
+        run: |
+          # Fetch release information and extract the release tag
+          RELEASE_TAG=$(curl -s https://api.github.com/repos/deltachat/deltachat-desktop/releases/latest | jq -r '.tag_name')
+          echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
+          echo "latest release: $RELEASE_TAG"
+      - name: Store artifacts
+        run: |
+          # Store the newly fetched release version in a file
+          echo "${{ steps.get_release.outputs.RELEASE_TAG }}" > deltachat-release-info
+          echo "Saved ${{ steps.get_release.outputs.RELEASE_TAG }} to deltachat-release-info"
       - name: checkout
         uses: actions/checkout@v4
       - name: Commit version update
         run: |
           RELEASE_TAG=$(curl -s https://api.github.com/repos/deltachat/deltachat-desktop/releases/latest | jq -r '.tag_name' | cut -c2-)
+          echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
+          echo "latest release: $RELEASE_TAG"
+          echo "${{ steps.get_release.outputs.RELEASE_TAG }}" > deltachat-release-info
+          echo "Saved ${{ steps.get_release.outputs.RELEASE_TAG }} to deltachat-release-info"
           sed -i "/^\([[:space:]]*version: \).*/s//\1$RELEASE_TAG/" snapcraft.yaml
           git config --global user.name 'Nils Büchner'
           git config --global user.email 'nils@buechner.me'
