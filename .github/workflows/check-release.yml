@@ -46,6 +46,10 @@ jobs:
             echo "release_changed=false" >> $GITHUB_OUTPUT
             echo "Not running build workflow because there is no previous release!"
           fi
+          if [ "${{ steps.get_release.outputs.RELEASE_TAG }}" == "null" ]; then
+            echo "release_changed=false" >> $GITHUB_OUTPUT
+            echo "Not running build workflow because getting current release failed!"
+          fi
 
       - name: Call workflow to build code
         if: steps.compare_release.outputs.release_changed == 'true'
