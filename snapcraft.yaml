@@ -22,7 +22,18 @@ architectures:
 apps:
   deltachat-desktop:
     command: ./deltachat-desktop --disable-gpu --no-sandbox
-    plugs: [home, x11, desktop, unity7, removable-media, network, audio-record, audio-playback, shared-memory]
+    #command: ./deltachat-desktop --disable-gpu
+    plugs:
+     - home
+     - x11
+     - desktop
+     - unity7
+     - removable-media
+     - network
+     - audio-record
+     - audio-playback
+     - shared-memory
+     - camera
     extensions: [ gnome ]
     environment:
       TMPDIR: $XDG_RUNTIME_DIR
@@ -30,9 +41,11 @@ apps:
       LD_LIBRARY_PATH: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libunity
 
 plugs:
-  shared-memory:
-    private: true
-
+   #browser-sandbox:
+   #   interface: browser-support
+   #   allow-sandbox: true
+   shared-memory:
+      private: true
 parts:
   main:
     source: .
@@ -71,13 +84,15 @@ parts:
         npm run build
         npm run pack:linux:dir
         cp -rv dist/${DISTDIR}/* $SNAPCRAFT_PART_INSTALL/
+        chmod 4755 $SNAPCRAFT_PART_INSTALL/chrome-sandbox
+        chown root:root $SNAPCRAFT_PART_INSTALL/chrome-sandbox
         craftctl set version="$version"
         cd ..
     build-environment:
-      - npm_config_unsafe_perm: 'true'
-      - SUDO_UID: '0'
-      - SUDO_GID: '0'
-      - SUDO_USER: 'root'
+      #- npm_config_unsafe_perm: 'true'
+      #- SUDO_UID: '0'
+      #- SUDO_GID: '0'
+      #- SUDO_USER: 'root'
       - VERSION_INFO_GIT_REF: 'latest'
       - PATH: "$PATH:$SNAPCRAFT_PART_BUILD/node_modules/.bin"
 
