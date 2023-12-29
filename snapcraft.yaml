@@ -11,7 +11,7 @@ description: |
 
 grade: stable
 confinement: strict
-compression: lzo
+compression: xz
 
 architectures:
   - build-on: amd64
@@ -21,8 +21,8 @@ architectures:
 
 apps:
   deltachat-desktop:
+    command-chain: ["./check.sh"]
     command: ./deltachat-desktop --disable-gpu --no-sandbox
-    #command: ./deltachat-desktop --disable-gpu
     plugs:
      - home
      - x11
@@ -41,9 +41,6 @@ apps:
       LD_LIBRARY_PATH: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libunity
 
 plugs:
-   #browser-sandbox:
-   #   interface: browser-support
-   #   allow-sandbox: true
    shared-memory:
       private: true
 parts:
@@ -86,13 +83,12 @@ parts:
         cp -rv dist/${DISTDIR}/* $SNAPCRAFT_PART_INSTALL/
         chmod 4755 $SNAPCRAFT_PART_INSTALL/chrome-sandbox
         chown root:root $SNAPCRAFT_PART_INSTALL/chrome-sandbox
-        craftctl set version="$version"
         cd ..
+        cp -f local/check.sh $SNAPCRAFT_PART_INSTALL/
+        cp -f local/check-sandbox.sh $SNAPCRAFT_PART_INSTALL/
+        chmod a+rx $SNAPCRAFT_PART_INSTALL/*.sh
+        craftctl set version="$version"
     build-environment:
-      #- npm_config_unsafe_perm: 'true'
-      #- SUDO_UID: '0'
-      #- SUDO_GID: '0'
-      #- SUDO_USER: 'root'
       - VERSION_INFO_GIT_REF: 'latest'
       - PATH: "$PATH:$SNAPCRAFT_PART_BUILD/node_modules/.bin"
 
@@ -110,11 +106,17 @@ parts:
        - libuuid1
        - libsecret-1-0
        - libunity9
+       - zenity
 
     build-packages:
        - curl
        - jq
        - wget
+
+layout:
+  /usr/share/zenity:
+    bind: $SNAP/usr/share/zenity
+
 lint:
   ignore:
     - library
