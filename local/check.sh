@@ -2,18 +2,26 @@
 snapctl is-connected camera
 cam=$?
 
-echo "CAM $cam"
+snapctl is-connected audio-record
+record=$?
 
-if [ -f $SNAP_USER_COMMON/.asked-permission-camera ] || [ "$cam" == "0" ]; then
+echo "CAM $cam"
+echo "RECORD $record"
+
+if [ "$record" == "0" ] && [ "$cam" == "0" ]; then
    exec "${@}"
 fi
 
-zenity --question --title='Allow camera access' \
-   --text="`printf "To be able to scan QR codes this applications needs camera access.\nTo grant this permission run\n\nsudo snap connect deltachat-desktop:camera\n\nin a terminal."`" --ok-label='OK' --cancel-label='Do not ask again'
+if [ -f $SNAP_USER_COMMON/.asked-permissions ]; then
+   exec "${@}"
+fi
+
+zenity --question --title='Permissions required' \
+   --text="`printf "To be able to scan QR codes and record voice messages this application needs some permissions.\nTo grant these permissions run\n\nsudo snap connect deltachat-desktop:camera\nsudo snap connect deltachat-desktop:audio-record\n\nin a terminal."`" --ok-label='OK' --cancel-label='Do not ask again'
 ret=$?
 if [[ "$ret" == "1" ]]; then
    echo $ret
-   touch $SNAP_USER_COMMON/.asked-permission-camera
+   touch $SNAP_USER_COMMON/.asked-permissions
 fi
 
 exec "${@}"
