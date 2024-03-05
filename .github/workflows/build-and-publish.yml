@@ -40,11 +40,11 @@ jobs:
           echo "${{ steps.get_release.outputs.release_tag }}" > deltachat-release-info
           echo "Saved ${{ steps.get_release.outputs.release_tag }} to deltachat-release-info"
       - name: Archive npm failure logs
-          uses: actions/upload-artifact@v3
-          if: failure()
-          with:
-             name: npm-logs
-             path: ~/.npm/_logs
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+            name: npm-logs
+            path: ~/.npm/_logs
       - name: Upload new artifact
         id: upload_artifact
         uses: actions/upload-artifact@v3
