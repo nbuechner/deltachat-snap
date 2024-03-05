@@ -44,7 +44,7 @@ jobs:
         if: failure()
         with:
             name: npm-logs
-            path: ~/.npm/_logs
+            path: /root/.npm/_logs/*.log
       - name: Upload new artifact
         id: upload_artifact
         uses: actions/upload-artifact@v3
