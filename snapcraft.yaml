@@ -85,7 +85,7 @@ parts:
         chown root:root $SNAPCRAFT_PART_INSTALL/chrome-sandbox
         cd ..
         cp -f local/check.sh $SNAPCRAFT_PART_INSTALL/
-        cp -f local/check-sandbox.sh $SNAPCRAFT_PART_INSTALL/
+        #cp -f local/check-sandbox.sh $SNAPCRAFT_PART_INSTALL/
         chmod a+rx $SNAPCRAFT_PART_INSTALL/*.sh
         craftctl set version="$version"
     build-environment:
