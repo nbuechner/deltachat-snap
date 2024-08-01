@@ -1,5 +1,5 @@
 name: deltachat-desktop
-base: core22
+base: core24
 adopt-info: main
 summary: Delta Chat is a messaging app that works over e-mail
 description: |
@@ -13,10 +13,12 @@ grade: stable
 confinement: strict
 compression: xz
 
-architectures:
-  - build-on: amd64
+platforms:
+  amd64:
+    build-on: amd64
     build-for: amd64
-  - build-on: arm64
+  arm64:
+    build-on: arm64
     build-for: arm64
 
 apps:
@@ -27,6 +29,7 @@ apps:
      - home
      - x11
      - desktop
+     - desktop-legacy
      - unity7
      - removable-media
      - network
@@ -34,10 +37,12 @@ apps:
      - audio-playback
      - shared-memory
      - camera
+     - wayland
     extensions: [ gnome ]
     environment:
       TMPDIR: $XDG_RUNTIME_DIR
-      DISABLE_WAYLAND: 1
+      #DISABLE_WAYLAND: 1
+      WM_CLASS: DeltaChat
       LD_LIBRARY_PATH: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libunity
 
 plugs:
@@ -63,7 +68,7 @@ parts:
         export DISTDIR="linux-unpacked"
         if [ $(uname -i) == 'aarch64' ]; then
            if [ ! -f "/usr/local/bin/cargo" ]; then
-              RUSTVER="1.74.0"
+              RUSTVER="1.76.0"
               wget -qO rust.tar.gz https://buechner.me/dist/rust-${RUSTVER}-aarch64-unknown-linux-gnu.tar.gz
               rm -Rf rust-${RUSTVER}-aarch64-unknown-linux-gnu
               tar xpf rust.tar.gz
@@ -77,6 +82,7 @@ parts:
            export DISTDIR="linux-arm64-unpacked"
         fi
         cd deltachat-desktop-${version}
+        npm install -g npm@10.5.0
         npm install
         npm run build
         npm run pack:linux:dir
@@ -85,7 +91,6 @@ parts:
         chown root:root $SNAPCRAFT_PART_INSTALL/chrome-sandbox
         cd ..
         cp -f local/check.sh $SNAPCRAFT_PART_INSTALL/
-        #cp -f local/check-sandbox.sh $SNAPCRAFT_PART_INSTALL/
         chmod a+rx $SNAPCRAFT_PART_INSTALL/*.sh
         craftctl set version="$version"
     build-environment:
