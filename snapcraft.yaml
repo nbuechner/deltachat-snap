@@ -81,8 +81,6 @@ parts:
            export DISTDIR="linux-arm64-unpacked"
         fi
         cd deltachat-desktop-${version}
-        PATH=$PATH:$SNAPCRAFT_PART_SRC/../npm/bin
-        npm config set unsafe-perm True
         npm install -g npm@10.5.0
         npm install
         npm run build
