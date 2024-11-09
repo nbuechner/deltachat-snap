@@ -60,11 +60,13 @@ parts:
           export GLOBAL_AGENT_HTTP_PROXY="${http_proxy}"
           export GLOBAL_AGENT_HTTPS_PROXY="${http_proxy}"
         fi
+        export DISTDIR="linux-unpacked"
+        export WDIR=$(pwd)
         version=$(wget -qO- https://api.github.com/repos/deltachat/deltachat-desktop/releases/latest | jq -r '.tag_name' | cut -c2-)
+        export VERSION_INFO_GIT_REF=$version
         wget -qO source.tgz https://github.com/deltachat/deltachat-desktop/archive/refs/tags/v${version}.tar.gz
         tar xf source.tgz
         rm -f source.tgz
-        export DISTDIR="linux-unpacked"
         if [ $(uname -i) == 'aarch64' ]; then
            if [ ! -f "/usr/local/bin/cargo" ]; then
               RUSTVER="1.76.0"
@@ -81,19 +83,21 @@ parts:
            export DISTDIR="linux-arm64-unpacked"
         fi
         cd deltachat-desktop-${version}
-        npm install -g npm@10.5.0
-        npm install
-        npm run build
-        npm run pack:linux:dir
+        npm install -g pnpm@latest
+        pnpm install
+        pnpm -w build:electron
+        cd packages/target-electron
+        pnpm build4production
+        pnpm pack:generate_config
+        pnpm run pack:patch-node-modules
+        pnpm run pack:linux:dir
         cp -rv dist/${DISTDIR}/* $SNAPCRAFT_PART_INSTALL/
         chmod 4755 $SNAPCRAFT_PART_INSTALL/chrome-sandbox
         chown root:root $SNAPCRAFT_PART_INSTALL/chrome-sandbox
-        cd ..
-        cp -f local/check.sh $SNAPCRAFT_PART_INSTALL/
+        cp -f $WDIR/local/check.sh $SNAPCRAFT_PART_INSTALL/
         chmod a+rx $SNAPCRAFT_PART_INSTALL/*.sh
         craftctl set version="$version"
     build-environment:
-      - VERSION_INFO_GIT_REF: 'latest'
       - PATH: "$PATH:$SNAPCRAFT_PART_BUILD/node_modules/.bin"
 
     build-snaps:
