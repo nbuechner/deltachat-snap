@@ -83,6 +83,7 @@ parts:
            export DISTDIR="linux-arm64-unpacked"
         fi
         cd deltachat-desktop-${version}
+        npm install -g npm@latest
         npm install -g pnpm@latest
         pnpm install
         pnpm -w build:electron
