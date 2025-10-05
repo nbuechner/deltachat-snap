@@ -64,22 +64,11 @@ parts:
         export WDIR=$(pwd)
         version=$(wget -qO- https://api.github.com/repos/deltachat/deltachat-desktop/releases/latest | jq -r '.tag_name' | cut -c2-)
         export VERSION_INFO_GIT_REF=$version
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
         wget -qO source.tgz https://github.com/deltachat/deltachat-desktop/archive/refs/tags/v${version}.tar.gz
         tar xf source.tgz
         rm -f source.tgz
         if [ $(uname -i) == 'aarch64' ]; then
-           if [ ! -f "/usr/local/bin/cargo" ]; then
-              RUSTVER="1.76.0"
-              wget -qO rust.tar.gz https://buechner.me/dist/rust-${RUSTVER}-aarch64-unknown-linux-gnu.tar.gz
-              rm -Rf rust-${RUSTVER}-aarch64-unknown-linux-gnu
-              tar xpf rust.tar.gz
-              cd rust-${RUSTVER}-aarch64-unknown-linux-gnu
-              ./install.sh
-              cd ..
-              rm -Rf rust-${RUSTVER}-aarch64-unknown-linux-gnu
-              rm -f rust.tar.gz
-              export PATH=$PATH:/usr/local/bin/
-           fi
            export DISTDIR="linux-arm64-unpacked"
         fi
         cd deltachat-desktop-${version}
@@ -102,7 +91,7 @@ parts:
       - PATH: "$PATH:$SNAPCRAFT_PART_BUILD/node_modules/.bin"
 
     build-snaps:
-      - node/20/stable
+      - node/22/stable
 
     stage-packages:
        - libgtk-3-0
