@@ -39,7 +39,6 @@ apps:
      - shared-memory
      - camera
      - wayland
-     - login-session-control
      - opengl
     extensions: [ gnome ]
     environment:
