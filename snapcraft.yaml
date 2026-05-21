@@ -24,7 +24,7 @@ platforms:
 apps:
   deltachat-desktop:
     command-chain: ["./check.sh"]
-    command: ./deltachat-desktop --disable-gpu --no-sandbox
+    command: ./deltachat-desktop --no-sandbox
     plugs:
      - home
      - x11
@@ -39,6 +39,8 @@ apps:
      - shared-memory
      - camera
      - wayland
+     - inhibit
+     - opengl
     extensions: [ gnome ]
     environment:
       TMPDIR: $XDG_RUNTIME_DIR
