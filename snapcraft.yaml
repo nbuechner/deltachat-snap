@@ -33,6 +33,7 @@ apps:
      - unity7
      - removable-media
      - network
+     - network-bind
      - audio-record
      - audio-playback
      - shared-memory
