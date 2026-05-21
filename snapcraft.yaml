@@ -39,7 +39,7 @@ apps:
      - shared-memory
      - camera
      - wayland
-     - inhibit
+     - login-session-control
      - opengl
     extensions: [ gnome ]
     environment:
